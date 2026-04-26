@@ -1,0 +1,48 @@
+1. Project Overview
+This repository provides a robust Python-based automation framework designed to characterize the Load Transient Response of DC-DC power modules. Specifically, it verifies the stability of the 3.3V power rail (U7) under dynamic load conditions. The suite streamlines the testing process by automating instrument communication, waveform data acquisition, and objective pass/fail analysis.
+
+2. System Requirements
+To run this test suite, ensure the following hardware and software prerequisites are met:
+
+Hardware
+Electronic Load: Programmable load (e.g., Keysight N3300A or equivalent) capable of pulsed mode operation.
+
+Oscilloscope: Digital Storage Oscilloscope (e.g., Tektronix DPO4000 series) with sufficient bandwidth for transient capture.
+
+Interface: Stable LAN or USB connection utilizing the NI-VISA communication backend.
+
+Software
+Python Version: 3.10 or higher.
+
+Dependencies: pyvisa, pandas, numpy, pyyaml.
+
+3. Setup & Configuration
+Follow these steps to initialize your testing environment:
+
+Environment Setup: Ensure your workstation has the required Python environment installed.
+
+Library Installation: Execute the following command in your terminal:
+
+bash
+pip install -r requirements.txt
+Instrument Configuration: Navigate to the config.yaml file and update the following parameters:
+
+load_address: The VISA resource string for your electronic load.
+
+scope_address: The VISA resource string for your oscilloscope.
+
+test_limits: Define the maximum allowable undershoot/overshoot (e.g., 3.45V).
+
+4. Execution Procedure
+To run the automated test sequence, use the terminal to execute the main.py script while providing the unique serial number of the unit under test (UUT):
+
+bash
+python src/main.py --sn SN-017
+5. Result Interpretation
+All test data is automatically logged to the /output directory.
+
+Data Format: Logs are exported in CSV format for easy integration into quality management systems.
+
+Log Contents: Every report includes high-precision timestamps, measured peak voltage values for each of the 10 cycles, and a final automated Pass/Fail status.
+
+Troubleshooting: Should a unit fail (e.g., Board SN-017), refer to docs/TROUBLESHOOTING.md for standardized failure analysis and rework procedures.
