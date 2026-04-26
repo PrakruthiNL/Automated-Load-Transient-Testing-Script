@@ -1,0 +1,40 @@
+import pyvisa
+import pandas as pd
+import time
+import os
+
+def run_transient_test():
+    rm = pyvisa.ResourceManager()
+    # Replace with your actual VISA resource addresses
+    load = rm.open_resource('TCPIP0::192.168.1.10::inst0::INSTR')
+    scope = rm.open_resource('USB0::0x...::INSTR')
+    
+    results = []
+    os.makedirs('waveforms', exist_ok=True)
+    
+    for i in range(1, 11):
+        # 1. Trigger Load Step
+        load.write("CURR:PULS:STAT ON")
+        time.sleep(0.5)
+        
+        # 2. Capture Waveform
+        scope.write("SAVe:WAVEform:FILEFormat CSV")
+        scope.write(f"SAVe:WAVEform CHAN1, 'waveforms/capture_{i}.csv'")
+        
+        # 3. Measurement & Logging
+        peak_v = float(scope.query("MEASU:MEAS1:VAL?"))
+        status = "PASS" if peak_v <= 3.45 else "FAIL"
+        
+        results.append({
+            "Iteration": i,
+            "Peak_V": peak_v,
+            "Status": status,
+            "Timestamp": pd.Timestamp.now()
+        })
+    
+    # 4. Generate Report
+    df = pd.DataFrame(results)
+    df.to_csv("test_report.csv", index=False)
+    print("Test Complete. Report generated.")
+
+# run_transient_test()
